@@ -10,12 +10,16 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
 // ============================================
 
 /**
- * Sanitize JSON string by removing control characters
+ * Sanitize JSON string by escaping control characters
  */
 function sanitizeJSON(text: string): string {
-  // Remove control characters (0x00-0x1F and 0x7F) that are not allowed in JSON strings
-  // Keep newline (0x0A), carriage return (0x0D), and tab (0x09) as they should be escaped by the API
-  return text.replace(/[\x00-\x09\x0B\x0C\x0E-\x1F\x7F]/g, '');
+  // Escape control characters properly for JSON
+  return text
+      .replace(/\\/g, '\\\\')  // Escape backslashes first
+      .replace(/\n/g, '\\n')     // Escape newlines
+      .replace(/\r/g, '\\r')     // Escape carriage returns
+      .replace(/\t/g, '\\t')     // Escape tabs
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');  // Remove other control chars
 }
 
 // ============================================
